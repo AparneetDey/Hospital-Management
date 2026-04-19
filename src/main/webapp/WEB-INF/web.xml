@@ -1,0 +1,35 @@
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+  <servlet>
+    <servlet-name>first</servlet-name>
+    <servlet-class>servlet.FirstServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>patients</servlet-name>
+    <servlet-class>servlet.PatientServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>doctors</servlet-name>
+    <servlet-class>servlet.DoctorServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>first</servlet-name>
+    <url-pattern>/first</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>patients</servlet-name>
+    <url-pattern>/patients</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>doctors</servlet-name>
+    <url-pattern>/doctors</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

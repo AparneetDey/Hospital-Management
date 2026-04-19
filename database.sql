@@ -1,0 +1,21 @@
+CREATE DATABASE IF NOT EXISTS hospital;
+
+USE hospital;
+
+CREATE TABLE IF NOT EXISTS doctors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    specialization VARCHAR(100) NOT NULL,
+    alloted VARCHAR(100) DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS patients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    age INT NOT NULL,
+    disease VARCHAR(150) NOT NULL,
+    doctor_id INT NULL
+);
+
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS doctor_id INT NULL;
+ALTER TABLE doctors MODIFY alloted VARCHAR(100) DEFAULT '';
