@@ -51,13 +51,15 @@
             <%
                 if (doctors != null) {
                     for (Doctor doctor : doctors) {
+                        boolean occupied = doctor.getAlloted() != null && !doctor.getAlloted().trim().isEmpty();
                         boolean selected = editing
                                 && patient.getDoctorId() != null
                                 && patient.getDoctorId() == doctor.getId();
+                        boolean disabled = occupied && !selected;
             %>
-            <option value="<%= doctor.getId() %>" <%= selected ? "selected" : "" %>>
+            <option value="<%= doctor.getId() %>" <%= selected ? "selected" : "" %> <%= disabled ? "disabled" : "" %>>
                 <%= doctor.getId() %> - <%= HtmlEscaper.escape(doctor.getName()) %>
-                (<%= HtmlEscaper.escape(doctor.getSpecialization()) %>)
+                (<%= HtmlEscaper.escape(doctor.getSpecialization()) %>)<%= disabled ? " - Unavailable" : "" %>
             </option>
             <%
                     }

@@ -14,7 +14,7 @@ public class DoctorDao {
     private static final String INSERT_DOCTOR =
             "INSERT INTO doctors (name, specialization, alloted) VALUES (?, ?, ?)";
     private static final String SELECT_ALL_DOCTORS =
-            "SELECT id, name, specialization, alloted FROM doctors ORDER BY id DESC";
+            "SELECT id, name, specialization, alloted FROM doctors ORDER BY id ASC";
     private static final String SELECT_DOCTOR_BY_ID =
             "SELECT id, name, specialization, alloted FROM doctors WHERE id = ?";
     private static final String UPDATE_DOCTOR =

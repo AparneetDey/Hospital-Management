@@ -3,10 +3,7 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
          https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
-  <servlet>
-    <servlet-name>first</servlet-name>
-    <servlet-class>servlet.FirstServlet</servlet-class>
-  </servlet>
+
   <servlet>
     <servlet-name>patients</servlet-name>
     <servlet-class>servlet.PatientServlet</servlet-class>
@@ -16,10 +13,6 @@
     <servlet-class>servlet.DoctorServlet</servlet-class>
   </servlet>
 
-  <servlet-mapping>
-    <servlet-name>first</servlet-name>
-    <url-pattern>/first</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>patients</servlet-name>
     <url-pattern>/patients</url-pattern>

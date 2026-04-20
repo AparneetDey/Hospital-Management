@@ -15,7 +15,7 @@ public class PatientDao {
     private static final String INSERT_PATIENT =
             "INSERT INTO patients (name, age, disease, doctor_id) VALUES (?, ?, ?, ?)";
     private static final String SELECT_ALL_PATIENTS =
-            "SELECT id, name, age, disease, doctor_id FROM patients ORDER BY id DESC";
+            "SELECT id, name, age, disease, doctor_id FROM patients ORDER BY id ASC";
     private static final String SELECT_PATIENT_BY_ID =
             "SELECT id, name, age, disease, doctor_id FROM patients WHERE id = ?";
     private static final String UPDATE_PATIENT =
@@ -30,6 +30,7 @@ public class PatientDao {
     public void save(Patient patient) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);
+            assertDoctorAvailableForAssignment(connection, patient.getDoctorId(), null);
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_PATIENT, Statement.RETURN_GENERATED_KEYS)) {
                 setPatientValues(statement, patient);
@@ -83,6 +84,7 @@ public class PatientDao {
             connection.setAutoCommit(false);
 
             Integer previousDoctorId = findDoctorIdByPatientId(connection, patient.getId());
+            assertDoctorAvailableForAssignment(connection, patient.getDoctorId(), patient.getId());
 
             try (PreparedStatement statement = connection.prepareStatement(UPDATE_PATIENT)) {
                 setPatientValues(statement, patient);
@@ -96,6 +98,8 @@ public class PatientDao {
 
             updateDoctorAllotment(connection, patient.getDoctorId(), patient.getId());
             connection.commit();
+        } catch (SQLException exception) {
+            throw exception;
         }
     }
 
@@ -142,6 +146,33 @@ public class PatientDao {
         }
 
         return null;
+    }
+
+    private void assertDoctorAvailableForAssignment(Connection connection, Integer doctorId, Integer currentPatientId)
+            throws SQLException {
+        if (doctorId == null) {
+            return;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT alloted FROM doctors WHERE id = ? FOR UPDATE")) {
+            statement.setInt(1, doctorId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new SQLException("Selected doctor does not exist.");
+                }
+
+                String alloted = resultSet.getString("alloted");
+                boolean assigned = alloted != null && !alloted.trim().isEmpty();
+                boolean assignedToCurrent = currentPatientId != null
+                        && String.valueOf(currentPatientId).equals(alloted);
+
+                if (assigned && !assignedToCurrent) {
+                    throw new SQLException("Selected doctor is already assigned to another patient.");
+                }
+            }
+        }
     }
 
     private void updateDoctorAllotment(Connection connection, Integer doctorId, int patientId) throws SQLException {

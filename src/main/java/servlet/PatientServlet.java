@@ -42,26 +42,34 @@ public class PatientServlet extends HttpServlet {
 
         try {
             String id = request.getParameter("id");
+            Integer patientId = null;
+            if (id != null && !id.trim().isEmpty()) {
+                patientId = Integer.parseInt(id);
+            }
+
             Patient patient = new Patient(
                     request.getParameter("name"),
                     Integer.parseInt(request.getParameter("age")),
                     request.getParameter("disease"),
                     parseDoctorId(request.getParameter("doctorId"))
             );
+            if (patientId != null) {
+                patient.setId(patientId);
+            }
 
-            if (id == null || id.trim().isEmpty()) {
+            if (patientId == null) {
                 patientDao.save(patient);
             } else {
-                patient.setId(Integer.parseInt(id));
                 patientDao.update(patient);
             }
 
             response.sendRedirect(request.getContextPath() + "/patients");
         } catch (NumberFormatException exception) {
             request.setAttribute("errorMessage", "Age must be a valid number.");
-            showForm(request, response, null);
+            showForm(request, response, buildPatientFromRequest(request));
         } catch (SQLException exception) {
-            throw new ServletException("Unable to save patient", exception);
+            request.setAttribute("errorMessage", exception.getMessage());
+            showForm(request, response, buildPatientFromRequest(request));
         }
     }
 
@@ -102,5 +110,44 @@ public class PatientServlet extends HttpServlet {
         }
 
         return Integer.parseInt(doctorId);
+    }
+
+    private int parseAgeSafely(String ageValue) {
+        try {
+            return Integer.parseInt(ageValue);
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
+    }
+
+    private Integer parseDoctorIdSafely(String doctorIdValue) {
+        try {
+            return parseDoctorId(doctorIdValue);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private Patient buildPatientFromRequest(HttpServletRequest request) {
+        String id = request.getParameter("id");
+        Integer patientId = null;
+        if (id != null && !id.trim().isEmpty()) {
+            try {
+                patientId = Integer.parseInt(id);
+            } catch (NumberFormatException ignored) {
+                patientId = null;
+            }
+        }
+
+        Patient patient = new Patient(
+                request.getParameter("name"),
+                parseAgeSafely(request.getParameter("age")),
+                request.getParameter("disease"),
+                parseDoctorIdSafely(request.getParameter("doctorId"))
+        );
+        if (patientId != null) {
+            patient.setId(patientId);
+        }
+        return patient;
     }
 }
